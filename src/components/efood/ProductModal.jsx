@@ -24,7 +24,16 @@ export function ProductModal({ product, onClose }) {
           <p>
             Preco: <strong>{formatPrice(product.preco)}</strong>
           </p>
-          <ModalButton type="button">Adicionar ao carrinho</ModalButton>
+          <ModalButton type="button" onClick={() => product.onAdd(product)}>
+            Adicionar ao carrinho
+          </ModalButton>
+          <ModalButton
+            type="button"
+            onClick={() => product.onRemove(product.id)}
+            disabled={product.quantityInCart === 0}
+          >
+            Remover do carrinho ({product.quantityInCart})
+          </ModalButton>
         </div>
         <CloseButton type="button" onClick={onClose} aria-label="Fechar modal">
           x

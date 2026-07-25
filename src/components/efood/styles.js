@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import { Link } from 'react-router-dom'
 
 export const pattern = `
   repeating-linear-gradient(
@@ -31,6 +32,11 @@ export const Hero = styled.section`
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
+
+  @media (max-width: 768px) {
+    min-height: 420px;
+  }
 `
 
 export const Logo = styled.div`
@@ -63,6 +69,65 @@ export const Slogan = styled.h1`
     margin-top: 160px;
     font-size: clamp(30px, 6vw, 44px);
     padding: 0 16px;
+  }
+
+  @media (max-width: 768px) {
+    margin-top: 120px;
+  }
+`
+
+export const CartCounter = styled.p`
+  margin: 12px 0 0;
+  background: #e66767;
+  color: #fff;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.95rem;
+
+  @media (max-width: 768px) {
+    font-size: 0.85rem;
+  }
+`
+
+export const CartShortcut = styled(Link)`
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #e66767;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+  z-index: 40;
+
+  span {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    background: #ffebd9;
+    color: #e66767;
+    font-size: 0.75rem;
+    font-weight: 800;
+    display: grid;
+    place-items: center;
+    border: 2px solid #e66767;
+    padding: 0 4px;
+  }
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+
+  @media (max-width: 1024px) {
+    width: 48px;
+    height: 48px;
   }
 `
 
@@ -200,6 +265,12 @@ export const BuyButton = styled.button`
   font-size: 0.9rem;
   padding: 8px;
   cursor: pointer;
+  margin-top: 6px;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 `
 
 export const Overlay = styled.div`
@@ -252,6 +323,11 @@ export const ModalButton = styled.button`
   font-weight: 700;
   padding: 10px 14px;
   cursor: pointer;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
 `
 
 export const CloseButton = styled.button`
@@ -274,5 +350,123 @@ export const FooterPattern = styled.footer`
 
   ${Logo} {
     margin-top: 40px;
+  }
+`
+
+export const CartSection = styled.section`
+  position: fixed;
+  top: 84px;
+  right: 16px;
+  width: min(360px, calc(100% - 32px));
+  max-height: 72vh;
+  overflow: auto;
+  z-index: 30;
+  border: 1px solid #e66767;
+  background: #fff8f4;
+  padding: 16px;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
+
+  @media (max-width: 1024px) {
+    position: static;
+    width: 100%;
+    max-height: none;
+    margin-top: 28px;
+    box-shadow: none;
+  }
+`
+
+export const CartTitle = styled.h2`
+  margin: 0;
+  color: #e66767;
+  font-size: 1.25rem;
+`
+
+export const CartEmptyText = styled.p`
+  margin: 12px 0 0;
+  color: #5f3c37;
+`
+
+export const CartList = styled.div`
+  margin-top: 14px;
+  display: grid;
+  gap: 10px;
+`
+
+export const CartItemRow = styled.article`
+  border: 1px solid #f1c4ad;
+  background: #fff;
+  padding: 10px;
+  display: grid;
+  grid-template-columns: 72px 1fr auto;
+  gap: 10px;
+  align-items: center;
+
+  img {
+    width: 72px;
+    height: 72px;
+    object-fit: cover;
+  }
+
+  @media (max-width: 560px) {
+    grid-template-columns: 1fr;
+
+    img {
+      width: 100%;
+      height: 180px;
+    }
+  }
+`
+
+export const CartItemDetails = styled.div`
+  display: grid;
+  gap: 3px;
+
+  strong {
+    color: #e66767;
+  }
+
+  small,
+  span {
+    color: #5f3c37;
+    font-size: 0.88rem;
+  }
+`
+
+export const CartFooter = styled.div`
+  margin-top: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #f1c4ad;
+  padding-top: 12px;
+
+  p,
+  strong {
+    margin: 0;
+    color: #e66767;
+    font-size: 1.1rem;
+  }
+`
+
+export const CartActions = styled.div`
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+
+  @media (max-width: 560px) {
+    justify-content: stretch;
+  }
+`
+
+export const CartActionButton = styled.button`
+  border: 0;
+  background: #e66767;
+  color: #fff;
+  font-weight: 700;
+  padding: 8px 12px;
+  cursor: pointer;
+
+  @media (max-width: 560px) {
+    width: 100%;
   }
 `

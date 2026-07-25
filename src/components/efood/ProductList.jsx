@@ -20,6 +20,16 @@ export function ProductList({ products, onBuy }) {
             <BuyButton type="button" onClick={() => onBuy(product)}>
               Comprar o produto
             </BuyButton>
+            <BuyButton type="button" onClick={() => product.onAdd(product)}>
+              Adicionar
+            </BuyButton>
+            <BuyButton
+              type="button"
+              onClick={() => product.onRemove(product.id)}
+              disabled={product.quantityInCart === 0}
+            >
+              Remover ({product.quantityInCart})
+            </BuyButton>
           </ProductCardWrap>
         ))}
       </ProductGrid>
