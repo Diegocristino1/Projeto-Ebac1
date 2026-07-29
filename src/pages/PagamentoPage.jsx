@@ -1,5 +1,5 @@
-import { EfoodLanding } from '../components/EfoodLanding'
+import { CheckoutStepPage } from '../components/CheckoutStepPage'
 
 export function PagamentoPage() {
-  return <EfoodLanding mode="pagamento" />
+  return <CheckoutStepPage step="payment" />
 }
