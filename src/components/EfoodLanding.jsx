@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
 import { useGetRestaurantsQuery } from '../store/services/efoodApi'
@@ -51,7 +51,6 @@ function renderStars(ratingValue) {
 export function EfoodLanding({ mode = 'home' }) {
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const location = useLocation()
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [deliveryData, setDeliveryData] = useState({
     receiver: '',
@@ -91,24 +90,16 @@ export function EfoodLanding({ mode = 'home' }) {
   const sidebarStep = getSidebarStep(mode)
   const sidebarMeta = {
     cart: {
-      stepLabel: 'Etapa 1',
-      title: 'Carrinho',
-      caption: 'Revise seus itens e siga para a entrega.',
+      title: 'Seu carrinho',
     },
     delivery: {
-      stepLabel: 'Etapa 2',
       title: 'Entrega',
-      caption: 'Preencha os dados para a entrega do pedido.',
     },
     payment: {
-      stepLabel: 'Etapa 3',
-      title: 'Pagamento',
-      caption: 'Finalize o pagamento com os dados do cartão.',
+      title: `Pagamento - Valor a pagar ${formatPrice(cartTotal)}`,
     },
     confirmation: {
-      stepLabel: 'Etapa 4',
-      title: 'Confirmação',
-      caption: 'Seu pedido foi recebido e já está sendo preparado.',
+      title: 'Pedido realizado',
     },
   }
   const activeSidebarMeta = sidebarMeta[sidebarStep] || sidebarMeta.cart
@@ -153,26 +144,11 @@ export function EfoodLanding({ mode = 'home' }) {
     <Page>
       {isHome ? (
         <HomeHero>
-          <HeroOverlay />
           <HeroInner>
-            <TopBar>
-              <TopLink to="/">Restaurantes</TopLink>
-              <LogoLink to="/">efood</LogoLink>
-              <CartAction to={cartCount > 0 ? '/carrinho' : '/perfil'}>
-                <CartIcon aria-hidden="true">🛒</CartIcon>
-                <CartLabel>
-                  {cartCount > 0 ? `${cartCount}` : '0'}
-                </CartLabel>
-              </CartAction>
-            </TopBar>
+            <LogoLink to="/">efood</LogoLink>
 
             <HeroContent>
-              <Eyebrow>Delivery & take away</Eyebrow>
               <HomeTitle>Viva experiências gastronômicas no conforto da sua casa</HomeTitle>
-              <HeroText>
-                Descubra restaurantes selecionados, pratos especiais e uma experiência de pedido
-                simples do começo ao fim.
-              </HeroText>
             </HeroContent>
           </HeroInner>
         </HomeHero>
@@ -181,23 +157,23 @@ export function EfoodLanding({ mode = 'home' }) {
           <TopBar>
             <TopLink to="/">Restaurantes</TopLink>
             <LogoLink to="/">efood</LogoLink>
-            <CartAction to={cartCount > 0 ? '/carrinho' : '/perfil'}>
+            <CartStatusLink
+              to="/carrinho"
+              aria-label={`${cartCount} produto(s) no carrinho`}
+              title="Abrir carrinho"
+            >
               <CartIcon aria-hidden="true">🛒</CartIcon>
-              <CartLabel>{cartCount > 0 ? `${cartCount}` : '0'}</CartLabel>
-            </CartAction>
+              <CartCount>{cartCount}</CartCount>
+            </CartStatusLink>
           </TopBar>
 
-          <RestaurantHero>
+          <RestaurantHero $image={selectedRestaurant?.capa}>
             <HeroShade />
             <RestaurantContent>
               <RestaurantInfo>
                 <RestaurantType>{selectedRestaurant?.tipo || 'Restaurante'}</RestaurantType>
                 <RestaurantName>{selectedRestaurant?.titulo || 'Carregando...'}</RestaurantName>
               </RestaurantInfo>
-              <RestaurantMeta>
-                <MetaBadge>Entrega em até 45 min</MetaBadge>
-                <MetaBadge>Pratos especiais</MetaBadge>
-              </RestaurantMeta>
             </RestaurantContent>
           </RestaurantHero>
         </ProfileTop>
@@ -236,32 +212,6 @@ export function EfoodLanding({ mode = 'home' }) {
 
         {!isLoading && !isError && !isHome && (
           <ContentStack>
-            <SectionHeader>
-              <div>
-                <SectionLabel>Cardápio</SectionLabel>
-                <SectionTitle>Escolha o prato ideal para o seu momento</SectionTitle>
-              </div>
-              <SectionHint>Pratos artesanais e sabor único</SectionHint>
-            </SectionHeader>
-
-            <FlowNav>
-              <FlowLink to="/perfil" $active={location.pathname === '/perfil'}>
-                Perfil
-              </FlowLink>
-              <FlowLink to="/carrinho" $active={location.pathname === '/carrinho'}>
-                Carrinho
-              </FlowLink>
-              <FlowLink to="/entrega" $active={location.pathname === '/entrega'}>
-                Entrega
-              </FlowLink>
-              <FlowLink to="/pagamento" $active={location.pathname === '/pagamento'}>
-                Pagamento
-              </FlowLink>
-              <FlowLink to="/confirmacao" $active={location.pathname === '/confirmacao'}>
-                Confirmação
-              </FlowLink>
-            </FlowNav>
-
             <MenuGrid>
               {products.map((product) => (
                 <MenuCard key={product.id}>
@@ -282,7 +232,7 @@ export function EfoodLanding({ mode = 'home' }) {
         <ModalOverlay onClick={() => setSelectedProduct(null)}>
           <ProductModal onClick={(event) => event.stopPropagation()}>
             <img src={selectedProduct.foto} alt={selectedProduct.nome} />
-            <div>
+            <ModalContent>
               <h3>{selectedProduct.nome}</h3>
               <p>{selectedProduct.descricao}</p>
               <p>Serve: {selectedProduct.porcao}</p>
@@ -295,7 +245,7 @@ export function EfoodLanding({ mode = 'home' }) {
               >
                 Adicionar ao carrinho - {formatPrice(selectedProduct.preco)}
               </ModalCartButton>
-            </div>
+            </ModalContent>
             <CloseModalButton
               type="button"
               aria-label="Fechar modal"
@@ -311,9 +261,7 @@ export function EfoodLanding({ mode = 'home' }) {
         <SidebarBackdrop>
           <SidebarPanel>
             <SidebarHeader>
-              <StepBadge>{activeSidebarMeta.stepLabel}</StepBadge>
               <SidebarTitle>{activeSidebarMeta.title}</SidebarTitle>
-              <SidebarCaption>{activeSidebarMeta.caption}</SidebarCaption>
             </SidebarHeader>
 
             {sidebarStep === 'cart' && (
@@ -328,9 +276,13 @@ export function EfoodLanding({ mode = 'home' }) {
                           <img src={item.image} alt={item.name} />
                           <div>
                             <h4>{item.name}</h4>
-                            <span>{formatPrice(item.price)}</span>
+                            <span>{item.quantity}x {formatPrice(item.price)}</span>
                           </div>
-                          <button type="button" onClick={() => handleRemoveFromCart(item.id)}>
+                          <button
+                            type="button"
+                            aria-label={`Remover uma unidade de ${item.name}`}
+                            onClick={() => handleRemoveFromCart(item.id)}
+                          >
                             ×
                           </button>
                         </CartItem>
@@ -609,43 +561,35 @@ export function EfoodLanding({ mode = 'home' }) {
 
 const Page = styled.main`
   min-height: 100vh;
-  background: linear-gradient(180deg, #fffaf6 0%, #fff4ea 100%);
-  color: #4b4b4b;
-  font-family: 'Inter', 'Segoe UI', sans-serif;
+  background: #fff8f2;
+  color: #e66767;
+  font-family: 'Roboto', 'Segoe UI', sans-serif;
 `
 
 const HomeHero = styled.header`
   position: relative;
-  min-height: 460px;
-  background: linear-gradient(135deg, #f9e0c6 0%, #ffe0b0 100%);
-  overflow: hidden;
-`
-
-const HeroOverlay = styled.div`
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at top left, rgba(255, 255, 255, 0.45), transparent 45%),
-    linear-gradient(90deg, rgba(230, 103, 103, 0.12), transparent);
+  min-height: 384px;
+  background-color: #ffebd9;
+  background-image: ${heroPattern};
 `
 
 const HeroInner = styled.div`
-  position: relative;
-  z-index: 1;
-  max-width: 1200px;
+  max-width: 1024px;
   margin: 0 auto;
-  padding: 24px 24px 60px;
+  padding: 40px 24px 64px;
   display: flex;
   flex-direction: column;
-  min-height: 100%;
+  align-items: center;
+  min-height: 384px;
 `
 
 const ProfileTop = styled.header`
-  background: linear-gradient(135deg, #f9e0c6 0%, #ffe0b0 100%);
+  background-color: #ffebd9;
+  background-image: ${heroPattern};
 `
 
 const TopBar = styled.div`
-  max-width: 1200px;
+  max-width: 1024px;
   margin: 0 auto;
   min-height: 120px;
   display: grid;
@@ -656,8 +600,11 @@ const TopBar = styled.div`
 
   @media (max-width: 700px) {
     min-height: 140px;
-    grid-template-columns: 1fr;
-    justify-items: center;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      'left right'
+      'logo logo';
+    align-items: center;
     padding: 20px 16px;
   }
 `
@@ -665,87 +612,91 @@ const TopBar = styled.div`
 const TopLink = styled(Link)`
   color: #e66767;
   font-size: 18px;
-  font-weight: 800;
-  text-decoration: none;
-`
-
-const CartAction = styled(Link)`
-  justify-self: end;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 14px;
-  border-radius: 999px;
-  background: #fff;
-  color: #e66767;
-  border: 1px solid rgba(230, 103, 103, 0.2);
-  box-shadow: 0 8px 20px rgba(230, 103, 103, 0.12);
+  font-weight: 900;
   text-decoration: none;
 
   @media (max-width: 700px) {
-    justify-self: center;
+    grid-area: left;
+    justify-self: start;
+  }
+`
+
+const CartStatusLink = styled(Link)`
+  justify-self: end;
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  background: #e66767;
+  color: #ffebd9;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  position: relative;
+
+  @media (max-width: 700px) {
+    grid-area: right;
+    justify-self: end;
   }
 `
 
 const CartIcon = styled.span`
-  font-size: 1.1rem;
+  font-size: 18px;
+  line-height: 1;
 `
 
-const CartLabel = styled.span`
-  font-size: 0.95rem;
-  font-weight: 800;
+const CartCount = styled.span`
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: #ffebd9;
+  color: #e66767;
+  border: 1px solid #e66767;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  padding: 0 4px;
 `
 
 const LogoLink = styled(Link)`
   color: #e66767;
-  border: 3px solid #e66767;
-  font-size: 36px;
+  font-size: 38px;
   line-height: 1;
   font-weight: 900;
   letter-spacing: 0.01em;
   text-transform: lowercase;
-  padding: 6px 12px;
-  background: #fff;
   text-decoration: none;
+
+  @media (max-width: 700px) {
+    grid-area: logo;
+    justify-self: center;
+  }
 `
 
 const HeroContent = styled.div`
-  margin: auto 0;
-  display: grid;
-  gap: 18px;
-  max-width: 720px;
-  padding: 32px 0 0;
-`
-
-const Eyebrow = styled.span`
-  color: #e66767;
-  font-weight: 800;
-  font-size: 0.9rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  margin: auto 0 0;
+  max-width: 540px;
+  padding-top: 72px;
 `
 
 const HomeTitle = styled.h1`
   margin: 0;
   color: #e66767;
-  font-size: clamp(32px, 4vw, 48px);
-  line-height: 1.2;
+  font-size: clamp(32px, 4vw, 36px);
+  line-height: 1.35;
   font-weight: 900;
-`
-
-const HeroText = styled.p`
-  margin: 0;
-  color: #6d4b3a;
-  font-size: 1.05rem;
-  max-width: 600px;
-  line-height: 1.7;
+  text-align: center;
 `
 
 const RestaurantHero = styled.section`
   position: relative;
-  min-height: 320px;
-  background: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1600&q=80')
-    center / cover no-repeat;
+  min-height: 280px;
+  background: url(${({ $image }) => $image || ''}) center / cover no-repeat;
   display: flex;
   align-items: flex-end;
 `
@@ -753,25 +704,16 @@ const RestaurantHero = styled.section`
 const RestaurantContent = styled.div`
   position: relative;
   z-index: 1;
-  max-width: 1200px;
+  max-width: 1024px;
   width: 100%;
   margin: 0 auto;
-  padding: 24px;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: 16px;
-
-  @media (max-width: 700px) {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+  padding: 25px 24px 32px;
 `
 
 const HeroShade = styled.div`
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.72) 100%);
+  background: rgba(0, 0, 0, 0.5);
 `
 
 const RestaurantInfo = styled.div`
@@ -782,37 +724,21 @@ const RestaurantInfo = styled.div`
 const RestaurantType = styled.p`
   margin: 0;
   color: #ffffff;
-  opacity: 0.8;
-  font-size: 1.2rem;
+  font-size: 32px;
   font-weight: 300;
 `
 
 const RestaurantName = styled.h1`
   margin: 0;
   color: #ffffff;
-  font-size: clamp(34px, 5vw, 44px);
+  font-size: clamp(32px, 5vw, 48px);
   font-weight: 900;
 `
 
-const RestaurantMeta = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-`
-
-const MetaBadge = styled.span`
-  padding: 8px 12px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.16);
-  color: #ffffff;
-  backdrop-filter: blur(6px);
-  font-size: 0.9rem;
-`
-
 const Main = styled.section`
-  max-width: 1200px;
+  max-width: 1024px;
   margin: 0 auto;
-  padding: 60px 24px 120px;
+  padding: 80px 24px 120px;
 `
 
 const StatusText = styled.p`
@@ -824,58 +750,13 @@ const StatusText = styled.p`
 
 const ContentStack = styled.div`
   display: grid;
-  gap: 24px;
-`
-
-const SectionHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: 16px;
-  flex-wrap: wrap;
-`
-
-const SectionLabel = styled.p`
-  margin: 0 0 6px;
-  color: #e66767;
-  font-size: 0.8rem;
-  font-weight: 800;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-`
-
-const SectionTitle = styled.h2`
-  margin: 0;
-  color: #e66767;
-  font-size: 1.7rem;
-`
-
-const SectionHint = styled.span`
-  color: #7d6560;
-  font-size: 0.95rem;
-`
-
-const FlowNav = styled.nav`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 24px;
-`
-
-const FlowLink = styled(Link)`
-  padding: 8px 12px;
-  border-radius: 999px;
-  background: ${({ $active }) => ($active ? '#e66767' : '#fff8f2')};
-  color: ${({ $active }) => ($active ? '#fff' : '#e66767')};
-  font-size: 0.9rem;
-  font-weight: 700;
-  border: 1px solid rgba(230, 103, 103, 0.16);
+  gap: 32px;
 `
 
 const RestaurantGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 32px;
+  gap: 48px 80px;
 
   @media (max-width: 900px) {
     grid-template-columns: 1fr;
@@ -883,17 +764,15 @@ const RestaurantGrid = styled.div`
 `
 
 const RestaurantCard = styled.article`
-  border: 1px solid rgba(230, 103, 103, 0.2);
+  border: 1px solid #e66767;
   background: #fff;
   position: relative;
-  border-radius: 24px;
   overflow: hidden;
-  box-shadow: 0 14px 34px rgba(230, 103, 103, 0.08);
 `
 
 const RestaurantImage = styled.img`
   width: 100%;
-  height: 226px;
+  height: 217px;
   object-fit: cover;
 `
 
@@ -909,24 +788,23 @@ const RestaurantBadges = styled.div`
 const Badge = styled.span`
   background: #e66767;
   color: #fff;
-  font-size: 0.75rem;
+  font-size: 12px;
   line-height: 1;
   font-weight: 700;
-  padding: 6px 10px;
-  border-radius: 999px;
+  padding: 6px 8px;
 `
 
 const RestaurantBody = styled.div`
-  padding: 16px 16px 24px;
+  padding: 8px;
   display: grid;
-  gap: 12px;
+  gap: 16px;
 
   p {
     margin: 0;
-    color: #4b4b4b;
-    line-height: 1.55;
-    font-size: 0.95rem;
-    min-height: 72px;
+    color: #e66767;
+    line-height: 1.4;
+    font-size: 14px;
+    min-height: 88px;
   }
 `
 
@@ -940,7 +818,7 @@ const RestaurantHeader = styled.div`
   strong {
     margin: 0;
     color: #e66767;
-    font-size: 1.05rem;
+    font-size: 18px;
   }
 `
 
@@ -948,13 +826,12 @@ const ActionLink = styled(Link)`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 40px;
-  padding: 0 14px;
+  min-height: 24px;
+  padding: 4px 6px;
   background: #e66767;
   color: #fff;
-  font-size: 0.95rem;
+  font-size: 14px;
   font-weight: 700;
-  border-radius: 999px;
   text-decoration: none;
   width: max-content;
 `
@@ -962,7 +839,7 @@ const ActionLink = styled(Link)`
 const MenuGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 24px;
+  gap: 32px;
 
   @media (max-width: 960px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -974,33 +851,29 @@ const MenuGrid = styled.div`
 `
 
 const MenuCard = styled.article`
-  background: #fff;
-  color: #4b4b4b;
-  padding: 16px;
-  border: 1px solid rgba(230, 103, 103, 0.16);
-  border-radius: 24px;
-  box-shadow: 0 12px 24px rgba(230, 103, 103, 0.06);
+  background: #e66767;
+  color: #ffebd9;
+  padding: 8px;
   display: grid;
-  gap: 12px;
+  gap: 8px;
 
   img {
     width: 100%;
-    height: 168px;
+    height: 167px;
     object-fit: cover;
-    border-radius: 16px;
   }
 
   h3 {
     margin: 0;
-    color: #e66767;
-    font-size: 1rem;
+    color: #ffebd9;
+    font-size: 16px;
   }
 
   p {
     margin: 0;
-    color: #6d4b3a;
-    line-height: 1.5;
-    font-size: 0.95rem;
+    color: #ffebd9;
+    line-height: 1.45;
+    font-size: 14px;
     min-height: 88px;
   }
 `
@@ -1008,13 +881,12 @@ const MenuCard = styled.article`
 const MenuButton = styled.button`
   width: 100%;
   border: 0;
-  min-height: 40px;
-  background: #e66767;
-  color: #fff;
-  font-size: 0.95rem;
+  min-height: 24px;
+  background: #ffebd9;
+  color: #e66767;
+  font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  border-radius: 999px;
 `
 
 const ModalOverlay = styled.div`
@@ -1030,14 +902,13 @@ const ModalOverlay = styled.div`
 
 const ProductModal = styled.div`
   width: min(1024px, 100%);
-  background: #fff;
-  color: #4b4b4b;
+  background: #e66767;
+  color: #ffebd9;
   display: grid;
   grid-template-columns: 280px 1fr;
   gap: 24px;
   padding: 24px;
   position: relative;
-  border-radius: 24px;
   box-shadow: 0 20px 48px rgba(0, 0, 0, 0.32);
 
   @media (max-width: 760px) {
@@ -1049,13 +920,12 @@ const ProductModal = styled.div`
     width: 100%;
     height: 280px;
     object-fit: cover;
-    border-radius: 16px;
   }
 
   h3 {
     margin: 0 0 12px;
     font-size: 1.3rem;
-    color: #e66767;
+    color: #ffffff;
   }
 
   p {
@@ -1065,16 +935,19 @@ const ProductModal = styled.div`
   }
 `
 
+const ModalContent = styled.div`
+  padding-right: 24px;
+`
+
 const ModalCartButton = styled.button`
   border: 0;
   min-height: 44px;
   padding: 0 16px;
-  background: #e66767;
-  color: #fff;
+  background: #ffebd9;
+  color: #e66767;
   font-size: 0.95rem;
   font-weight: 700;
   cursor: pointer;
-  border-radius: 999px;
 `
 
 const CloseModalButton = styled.button`
@@ -1083,7 +956,7 @@ const CloseModalButton = styled.button`
   right: 12px;
   border: 0;
   background: transparent;
-  color: #e66767;
+  color: #ffffff;
   font-size: 1.3rem;
   cursor: pointer;
 `
@@ -1098,44 +971,26 @@ const SidebarBackdrop = styled.div`
 `
 
 const SidebarPanel = styled.aside`
-  width: min(420px, 100%);
+  width: min(360px, 100%);
   min-height: 100vh;
-  background: #fff;
-  color: #4b4b4b;
-  padding: 24px;
+  background: #e66767;
+  color: #ffebd9;
+  padding: 32px 8px 16px;
   overflow-y: auto;
   box-shadow: -16px 0 40px rgba(0, 0, 0, 0.16);
-  border-radius: 24px 0 0 24px;
 `
 
 const SidebarHeader = styled.div`
   display: grid;
   gap: 8px;
-  margin-bottom: 24px;
-`
-
-const StepBadge = styled.span`
-  width: max-content;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: #fff4ea;
-  color: #e66767;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  margin-bottom: 16px;
+  padding: 0 8px;
 `
 
 const SidebarTitle = styled.h2`
   margin: 0;
-  font-size: 1.35rem;
-  color: #e66767;
-`
-
-const SidebarCaption = styled.p`
-  margin: 0;
-  color: #7d6560;
-  line-height: 1.5;
+  font-size: 16px;
+  color: #ffebd9;
 `
 
 const PaymentCardSection = styled.div`
@@ -1191,13 +1046,13 @@ const CardLabel = styled.span`
 
 const PaymentFormTitle = styled.h3`
   margin: 0;
-  color: #e66767;
+  color: #ffebd9;
   font-size: 1rem;
 `
 
 const PaymentHint = styled.p`
   margin: 0;
-  color: #7d6560;
+  color: #ffebd9;
   font-size: 0.9rem;
   line-height: 1.5;
 `
@@ -1205,40 +1060,41 @@ const PaymentHint = styled.p`
 const SidebarText = styled.p`
   margin: 0 0 16px;
   line-height: 1.6;
-  font-size: 0.95rem;
+  font-size: 14px;
+  color: #ffebd9;
+  padding: 0 8px;
 `
 
 const CartList = styled.div`
   display: grid;
   gap: 12px;
   margin-bottom: 24px;
+  padding: 0 8px;
 `
 
 const CartItem = styled.article`
-  background: #fff8f2;
+  background: #ffebd9;
   display: grid;
   grid-template-columns: 80px 1fr auto;
   gap: 8px;
-  padding: 10px;
+  padding: 8px;
   position: relative;
-  border-radius: 16px;
 
   img {
     width: 80px;
     height: 80px;
     object-fit: cover;
-    border-radius: 12px;
   }
 
   h4 {
     margin: 4px 0 2px;
     color: #e66767;
-    font-size: 1rem;
+    font-size: 18px;
   }
 
   span {
-    color: #7d6560;
-    font-size: 0.9rem;
+    color: #e66767;
+    font-size: 14px;
   }
 
   button {
@@ -1246,7 +1102,7 @@ const CartItem = styled.article`
     border: 0;
     background: transparent;
     color: #e66767;
-    font-size: 1.2rem;
+    font-size: 20px;
     cursor: pointer;
   }
 `
@@ -1255,16 +1111,15 @@ const TotalRow = styled.div`
   display: flex;
   justify-content: space-between;
   margin-bottom: 16px;
-  padding-top: 4px;
+  padding: 0 8px;
 
   span,
   strong {
-    font-size: 0.95rem;
-    color: #4b4b4b;
+    font-size: 14px;
+    color: #ffebd9;
   }
 
   strong {
-    color: #e66767;
     font-weight: 800;
   }
 `
@@ -1272,48 +1127,46 @@ const TotalRow = styled.div`
 const SidebarPrimaryAction = styled.button`
   width: 100%;
   border: 0;
-  min-height: 44px;
-  background: #e66767;
-  color: #fff;
-  font-size: 0.95rem;
+  min-height: 24px;
+  background: #ffebd9;
+  color: #e66767;
+  font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  border-radius: 999px;
   margin-bottom: 10px;
 `
 
 const SidebarSecondaryAction = styled.button`
   width: 100%;
-  border: 1px solid rgba(230, 103, 103, 0.2);
-  min-height: 44px;
-  background: #fff;
+  border: 0;
+  min-height: 24px;
+  background: #ffebd9;
   color: #e66767;
-  font-size: 0.95rem;
+  font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  border-radius: 999px;
 `
 
 const FormGroup = styled.div`
   display: grid;
   gap: 8px;
   margin-bottom: 12px;
+  padding: 0 8px;
 
   label {
-    font-size: 0.9rem;
+    font-size: 14px;
     font-weight: 700;
-    color: #4b4b4b;
+    color: #ffebd9;
   }
 
   input {
     width: 100%;
-    border: 1px solid rgba(230, 103, 103, 0.18);
+    border: 0;
     min-height: 42px;
     padding: 0 12px;
-    background: #fff8f2;
+    background: #ffebd9;
     color: #4b4b4b;
-    font-size: 0.95rem;
-    border-radius: 12px;
+    font-size: 14px;
   }
 `
 
@@ -1321,6 +1174,7 @@ const CompactRow = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
+  padding: 0 8px;
 
   @media (max-width: 640px) {
     grid-template-columns: 1fr;
@@ -1343,6 +1197,6 @@ const FooterText = styled.p`
   max-width: 520px;
   text-align: center;
   color: #e66767;
-  font-size: 0.95rem;
-  line-height: 1.7;
+  font-size: 10px;
+  line-height: 1.4;
 `
