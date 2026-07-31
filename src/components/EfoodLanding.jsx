@@ -153,11 +153,6 @@ export function EfoodLanding({ mode = 'home' }) {
     dispatch(removeFromCart(productId))
   }
 
-  const handleGoToCartWithProduct = (product) => {
-    handleAddToCart(product)
-    navigate('/carrinho')
-  }
-
   const handleFinishOrder = () => {
     dispatch(clearCart())
     navigate('/')
@@ -245,8 +240,8 @@ export function EfoodLanding({ mode = 'home' }) {
                   <img src={product.foto} alt={product.nome} />
                   <h3>{product.nome}</h3>
                   <p>{shortDescription(product.descricao)}</p>
-                  <MenuButton type="button" onClick={() => handleGoToCartWithProduct(product)}>
-                    Adicionar e ir para o carrinho
+                  <MenuButton type="button" onClick={() => setSelectedProduct(product)}>
+                    Mais detalhes
                   </MenuButton>
                 </MenuCard>
               ))}
