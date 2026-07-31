@@ -153,9 +153,18 @@ export function EfoodLanding({ mode = 'home' }) {
     dispatch(removeFromCart(productId))
   }
 
+  const handleGoToCartWithProduct = (product) => {
+    handleAddToCart(product)
+    navigate('/carrinho')
+  }
+
   const handleFinishOrder = () => {
     dispatch(clearCart())
     navigate('/')
+  }
+
+  const handleCloseSidebar = () => {
+    navigate(-1)
   }
 
   return (
@@ -236,8 +245,8 @@ export function EfoodLanding({ mode = 'home' }) {
                   <img src={product.foto} alt={product.nome} />
                   <h3>{product.nome}</h3>
                   <p>{shortDescription(product.descricao)}</p>
-                  <MenuButton type="button" onClick={() => setSelectedProduct(product)}>
-                    Mais detalhes
+                  <MenuButton type="button" onClick={() => handleGoToCartWithProduct(product)}>
+                    Adicionar e ir para o carrinho
                   </MenuButton>
                 </MenuCard>
               ))}
@@ -276,10 +285,17 @@ export function EfoodLanding({ mode = 'home' }) {
       )}
 
       {!isHome && sidebarStep && (
-        <SidebarBackdrop>
-          <SidebarPanel>
+        <SidebarBackdrop onClick={handleCloseSidebar}>
+          <SidebarPanel onClick={(event) => event.stopPropagation()}>
             <SidebarHeader>
               <SidebarTitle>{activeSidebarMeta.title}</SidebarTitle>
+              <SidebarCloseButton
+                type="button"
+                aria-label="Fechar carrinho"
+                onClick={handleCloseSidebar}
+              >
+                ×
+              </SidebarCloseButton>
             </SidebarHeader>
 
             {sidebarStep === 'cart' && (
@@ -301,7 +317,47 @@ export function EfoodLanding({ mode = 'home' }) {
                             aria-label={`Remover uma unidade de ${item.name}`}
                             onClick={() => handleRemoveFromCart(item.id)}
                           >
-                            ×
+                            <svg
+                              width="18"
+                              height="18"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                              aria-hidden="true"
+                            >
+                              <path
+                                d="M4 7H20"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                              />
+                              <path
+                                d="M9 7V5C9 4.44772 9.44772 4 10 4H14C14.5523 4 15 4.44772 15 5V7"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                              <path
+                                d="M7 7L8 19C8.08284 19.9944 8.9145 20.75 9.91236 20.75H14.0876C15.0855 20.75 15.9172 19.9944 16 19L17 7"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                              <path
+                                d="M10 11V17"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                              />
+                              <path
+                                d="M14 11V17"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                              />
+                            </svg>
                           </button>
                         </CartItem>
                       ))}
@@ -999,10 +1055,21 @@ const SidebarPanel = styled.aside`
 `
 
 const SidebarHeader = styled.div`
-  display: grid;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   gap: 8px;
   margin-bottom: 16px;
   padding: 0 8px;
+`
+
+const SidebarCloseButton = styled.button`
+  border: 0;
+  background: transparent;
+  color: #ffebd9;
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
 `
 
 const SidebarTitle = styled.h2`
@@ -1117,10 +1184,13 @@ const CartItem = styled.article`
 
   button {
     align-self: end;
-    border: 0;
-    background: transparent;
+    border: 1px solid #e66767;
+    background: #fff8f4;
     color: #e66767;
-    font-size: 20px;
+    width: 30px;
+    height: 30px;
+    display: grid;
+    place-items: center;
     cursor: pointer;
   }
 `
