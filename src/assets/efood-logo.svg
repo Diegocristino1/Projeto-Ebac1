@@ -1,0 +1,8 @@
+<svg width="125" height="58" viewBox="0 0 125 58" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="efood-logo-title">
+  <title id="efood-logo-title">efood</title>
+  <rect x="1.5" y="1.5" width="122" height="55" rx="6.5" fill="#FFF8F4" stroke="#E66767" stroke-width="3"/>
+  <path d="M20 30.5H35" stroke="#E66767" stroke-width="5" stroke-linecap="round"/>
+  <path d="M20 23.5H35" stroke="#E66767" stroke-width="5" stroke-linecap="round"/>
+  <path d="M20 37.5H31" stroke="#E66767" stroke-width="5" stroke-linecap="round"/>
+  <text x="41" y="38" fill="#E66767" font-family="'Trebuchet MS', 'Verdana', sans-serif" font-weight="800" font-size="30" letter-spacing="0.5">food</text>
+</svg>

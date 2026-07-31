@@ -1,10 +1,11 @@
+import efoodLogo from '../../assets/efood-logo.svg'
 import { CartCounter, CartShortcut, Hero, Logo, Slogan } from './styles'
 
-export function HeaderSection({ cartCount }) {
+export function HeaderSection({ cartCount, onOpenCart }) {
   return (
     <Hero>
-      <Logo>efood</Logo>
-      <CartShortcut to="/carrinho" aria-label="Abrir carrinho">
+      <Logo src={efoodLogo} alt="efood" />
+      <CartShortcut type="button" onClick={onOpenCart} aria-label="Abrir carrinho">
         <svg
           width="24"
           height="24"

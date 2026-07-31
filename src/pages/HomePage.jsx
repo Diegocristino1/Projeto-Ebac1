@@ -1,5 +1,5 @@
 import { EfoodLanding } from '../components/EfoodLanding'
 
 export function HomePage() {
-  return <EfoodLanding />
+  return <EfoodLanding page="home" />
 }

@@ -39,21 +39,13 @@ export const Hero = styled.section`
   }
 `
 
-export const Logo = styled.div`
+export const Logo = styled.img`
   margin-top: 38px;
-  border: 4px solid #e66767;
-  color: #e66767;
-  font-weight: 900;
-  letter-spacing: 0.02em;
-  font-size: 58px;
-  line-height: 1;
-  padding: 8px 16px;
-  background: #fff;
-  text-transform: lowercase;
+  width: min(125px, 40vw);
+  height: auto;
 
   @media (max-width: 768px) {
-    font-size: 40px;
-    border-width: 3px;
+    width: min(112px, 38vw);
   }
 `
 
@@ -90,7 +82,7 @@ export const CartCounter = styled.p`
   }
 `
 
-export const CartShortcut = styled(Link)`
+export const CartShortcut = styled.button`
   position: fixed;
   top: 16px;
   right: 16px;
@@ -103,6 +95,8 @@ export const CartShortcut = styled(Link)`
   place-items: center;
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
   z-index: 40;
+  border: 0;
+  cursor: pointer;
 
   span {
     position: absolute;
@@ -179,6 +173,17 @@ export const CardBody = styled.div`
     line-height: 1.45;
     font-size: 0.95rem;
   }
+`
+
+export const CardCta = styled(Link)`
+  display: inline-block;
+  margin-top: 14px;
+  background: #e66767;
+  color: #fff;
+  padding: 8px 12px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-decoration: none;
 `
 
 export const CardHeader = styled.div`
@@ -353,26 +358,49 @@ export const FooterPattern = styled.footer`
   }
 `
 
-export const CartSection = styled.section`
+export const CartOverlay = styled.div`
   position: fixed;
-  top: 84px;
-  right: 16px;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: flex-end;
+  padding: 84px 16px 16px;
+  z-index: 50;
+
+  @media (max-width: 1024px) {
+    align-items: flex-end;
+    padding: 16px;
+  }
+`
+
+export const CartSection = styled.section`
   width: min(360px, calc(100% - 32px));
   max-height: 72vh;
   overflow: auto;
-  z-index: 30;
   border: 1px solid #e66767;
   background: #fff8f4;
   padding: 16px;
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
 
   @media (max-width: 1024px) {
-    position: static;
     width: 100%;
     max-height: none;
-    margin-top: 28px;
-    box-shadow: none;
   }
+`
+
+export const CartHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+`
+
+export const CartCloseButton = styled.button`
+  border: 0;
+  background: transparent;
+  color: #e66767;
+  font-size: 1.25rem;
+  cursor: pointer;
 `
 
 export const CartTitle = styled.h2`
@@ -469,4 +497,15 @@ export const CartActionButton = styled.button`
   @media (max-width: 560px) {
     width: 100%;
   }
+`
+
+export const IconActionButton = styled.button`
+  border: 1px solid #f1c4ad;
+  background: #fff;
+  color: #e66767;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
 `

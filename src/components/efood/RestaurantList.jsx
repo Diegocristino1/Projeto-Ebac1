@@ -1,6 +1,7 @@
 import {
   Badge,
   CardBody,
+  CardCta,
   CardHeader,
   Cover,
   RestaurantCardWrap,
@@ -19,6 +20,7 @@ export function RestaurantList({ restaurants }) {
               <Badge>{restaurant.tipo}</Badge>
             </CardHeader>
             <p>{restaurant.descricao}</p>
+            <CardCta to={`/perfil/${restaurant.id}`}>Ver perfil</CardCta>
           </CardBody>
         </RestaurantCardWrap>
       ))}

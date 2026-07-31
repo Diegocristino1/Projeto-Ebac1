@@ -6,10 +6,10 @@ import {
 } from './styles'
 import { shortDescription } from './utils'
 
-export function ProductList({ products, onBuy }) {
+export function ProductList({ products, onBuy, title = 'Produtos' }) {
   return (
     <>
-      <ProductsTitle>Produtos</ProductsTitle>
+      <ProductsTitle>{title}</ProductsTitle>
       <ProductGrid>
         {products.map((product) => (
           <ProductCardWrap key={product.id}>

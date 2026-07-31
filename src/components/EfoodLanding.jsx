@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useParams } from 'react-router-dom'
 import { Content, Page } from './efood/styles'
 import { HeaderSection } from './efood/HeaderSection'
 import { FooterSection } from './efood/FooterSection'
@@ -11,10 +12,12 @@ import { CartSummary } from './efood/CartSummary'
 import { useGetRestaurantsQuery } from '../store/services/efoodApi'
 import { addToCart, removeFromCart } from '../store/slices/cartSlice'
 
-export function EfoodLanding() {
+export function EfoodLanding({ page = 'home' }) {
   const [selectedProduct, setSelectedProduct] = useState(null)
+  const [isCartOpen, setIsCartOpen] = useState(false)
   const dispatch = useDispatch()
   const cartItems = useSelector((state) => state.cart.items)
+  const { restaurantId } = useParams()
   const {
     data: restaurants = [],
     isLoading,
@@ -74,24 +77,39 @@ export function EfoodLanding() {
     })
   }, [cartQuantities, selectedProduct])
 
-  const allProducts = useMemo(
-    () =>
-      restaurants.flatMap((restaurant) =>
-        restaurant.cardapio.map((product) => ({
-          ...product,
-          id: `${restaurant.id}-${product.id}`,
-          restaurantTitle: restaurant.titulo,
-          onAdd: handleAddToCart,
-          onRemove: handleRemoveFromCart,
-          quantityInCart: cartQuantities[`${restaurant.id}-${product.id}`] ?? 0,
-        })),
-      ),
-    [restaurants, cartQuantities, handleAddToCart, handleRemoveFromCart],
-  )
+  const selectedRestaurant = useMemo(() => {
+    if (page !== 'profile') {
+      return null
+    }
+
+    return (
+      restaurants.find((restaurant) => String(restaurant.id) === restaurantId) ??
+      null
+    )
+  }, [page, restaurants, restaurantId])
+
+  const visibleProducts = useMemo(() => {
+    if (!selectedRestaurant) {
+      return []
+    }
+
+    return selectedRestaurant.cardapio.map((product) => {
+      const productId = `${selectedRestaurant.id}-${product.id}`
+
+      return {
+        ...product,
+        id: productId,
+        restaurantTitle: selectedRestaurant.titulo,
+        onAdd: handleAddToCart,
+        onRemove: handleRemoveFromCart,
+        quantityInCart: cartQuantities[productId] ?? 0,
+      }
+    })
+  }, [selectedRestaurant, cartQuantities, handleAddToCart, handleRemoveFromCart])
 
   return (
     <Page>
-      <HeaderSection cartCount={cartCount} />
+      <HeaderSection cartCount={cartCount} onOpenCart={() => setIsCartOpen(true)} />
 
       <Content>
         {isLoading && <StatusMessage>Carregando restaurantes...</StatusMessage>}
@@ -101,12 +119,21 @@ export function EfoodLanding() {
 
         {!isLoading && !isError && (
           <>
-            <RestaurantList restaurants={restaurants} />
-            <ProductList
-              products={allProducts}
-              onBuy={(product) => setSelectedProduct(product)}
-            />
-            <CartSummary />
+            {page === 'home' && <RestaurantList restaurants={restaurants} />}
+
+            {page === 'profile' && !selectedRestaurant && (
+              <StatusMessage>Restaurante nao encontrado.</StatusMessage>
+            )}
+
+            {page === 'profile' && selectedRestaurant && (
+              <ProductList
+                title={`Cardapio de ${selectedRestaurant.titulo}`}
+                products={visibleProducts}
+                onBuy={(product) => setSelectedProduct(product)}
+              />
+            )}
+
+            {isCartOpen && <CartSummary onClose={() => setIsCartOpen(false)} />}
           </>
         )}
       </Content>
