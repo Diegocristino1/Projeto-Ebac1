@@ -14,7 +14,7 @@ export const GlobalStyle = createGlobalStyle`
 
   body {
     margin: 0;
-    font-family: 'Nunito Sans', 'Segoe UI', sans-serif;
+    font-family: 'Roboto', 'Segoe UI', sans-serif;
     color: ${({ theme }) => theme.colors.text};
     background: ${({ theme }) => theme.colors.bg};
   }

@@ -1,5 +1,5 @@
 import { EfoodLanding } from '../components/EfoodLanding'
 
 export function PerfilPage() {
-  return <EfoodLanding page="profile" />
+  return <EfoodLanding mode="perfil" />
 }
