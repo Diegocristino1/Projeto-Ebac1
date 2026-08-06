@@ -48,6 +48,14 @@ function renderStars(ratingValue) {
   return '★'.repeat(Math.min(rating, 5))
 }
 
+function buildStepPath(step, restaurantId) {
+  if (!restaurantId) {
+    return `/${step}`
+  }
+
+  return `/${step}/${restaurantId}`
+}
+
 export function EfoodLanding({ mode = 'home' }) {
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -159,7 +167,12 @@ export function EfoodLanding({ mode = 'home' }) {
   }
 
   const handleCloseSidebar = () => {
-    navigate(-1)
+    if (restaurantId) {
+      navigate(`/perfil/${restaurantId}`)
+      return
+    }
+
+    navigate('/')
   }
 
   return (
@@ -180,7 +193,7 @@ export function EfoodLanding({ mode = 'home' }) {
             <TopLink to="/">Restaurantes</TopLink>
             <LogoLink to="/">efood</LogoLink>
             <CartStatusLink
-              to="/carrinho"
+              to={buildStepPath('carrinho', restaurantId)}
               aria-label={`${cartCount} produto(s) no carrinho`}
               title="Abrir carrinho"
             >
@@ -363,7 +376,10 @@ export function EfoodLanding({ mode = 'home' }) {
                       <strong>{formatPrice(cartTotal)}</strong>
                     </TotalRow>
 
-                    <SidebarPrimaryAction type="button" onClick={() => navigate('/entrega')}>
+                    <SidebarPrimaryAction
+                      type="button"
+                      onClick={() => navigate(buildStepPath('entrega', restaurantId))}
+                    >
                       Continuar com a entrega
                     </SidebarPrimaryAction>
                   </>
@@ -465,10 +481,16 @@ export function EfoodLanding({ mode = 'home' }) {
                   />
                 </FormGroup>
 
-                <SidebarPrimaryAction type="button" onClick={() => navigate('/pagamento')}>
+                <SidebarPrimaryAction
+                  type="button"
+                  onClick={() => navigate(buildStepPath('pagamento', restaurantId))}
+                >
                   Continuar com o pagamento
                 </SidebarPrimaryAction>
-                <SidebarSecondaryAction type="button" onClick={() => navigate('/carrinho')}>
+                <SidebarSecondaryAction
+                  type="button"
+                  onClick={() => navigate(buildStepPath('carrinho', restaurantId))}
+                >
                   Voltar para o carrinho
                 </SidebarSecondaryAction>
               </>
@@ -579,10 +601,16 @@ export function EfoodLanding({ mode = 'home' }) {
                   </FormGroup>
                 </CompactRow>
 
-                <SidebarPrimaryAction type="button" onClick={() => navigate('/confirmacao')}>
+                <SidebarPrimaryAction
+                  type="button"
+                  onClick={() => navigate(buildStepPath('confirmacao', restaurantId))}
+                >
                   Finalizar pagamento
                 </SidebarPrimaryAction>
-                <SidebarSecondaryAction type="button" onClick={() => navigate('/entrega')}>
+                <SidebarSecondaryAction
+                  type="button"
+                  onClick={() => navigate(buildStepPath('entrega', restaurantId))}
+                >
                   Voltar para a edicao de endereco
                 </SidebarSecondaryAction>
               </>
